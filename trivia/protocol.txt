@@ -1,0 +1,294 @@
+Protocol documentation
+https://s3.eu-west-1.amazonaws.com/data.cyber.org.il/virtual_courses/network.py/chapter_1/protocol1.5.2.html
+
+The protocol runs in TCP (choose your port. We will use 5678)
+
+
+
+General message  format
+
+CCCCCCCCCCCCCCCCC | LLLL  |  MMM
+
+
+C  -  In this message structure 16 characters of command. Command characters indicate the type of message (for example,  LOGIN ). The remaining characters of the 16 characters are spaces ( "" ).
+
+|   Separation between parts of the message. This separation is necessary.
+
+L  - This field is 4 characters long, indicating the size of the next field - the message field (M). The value will be between 0000 and 9999 (negative value is invalid).
+
+|   Separation between parts of the message. This separation is necessary.
+
+M - Information represented by characters. In this section we will write down the message. The message will contain the information we want to convey. Some commands do not require a message field (such as a LOGOUT message) and in such cases we will not fill in these characters and this field will be left blank.
+
+
+
+Messages ( Messages)
+This section describes the different messages that can be transferred between the client and the server, and from the server to the client.
+
+Client -> Server -> Server
+LOGIN message
+Message Description: Request login from user
+
+LOGIN  : Command
+
+Information structure:  UUU ... # PPP ...
+
+U  - Username
+
+#  - Separation between parts of the message. This separation is necessary.
+
+P  - password
+
+Example of a real message in the protocol:
+
+ LOGIN            | 0009 | aaaa # bbbb
+
+[]
+LOGOUT message
+Description: Disconnect from the server
+
+LOGOUT  : Command
+
+Information structure: Empty
+
+Example of a real message in the protocol:
+
+LOGOUT           | 0000 |
+
+LOGGED
+Description: Get a list of users who are currently logged in to the game
+
+LOGGED  : Command
+
+Information structure: Empty
+
+Example of a real message in the protocol:
+
+LOGGED           | 0000 |
+
+
+
+GET_QUESTION
+Description: A command that asks for a trivia question from the server
+
+GET_QUESTION : Command
+
+Information structure: Empty
+
+Example of a real message in the protocol:
+
+GET_QUESTION     | 0000 |
+
+
+
+SEND_ANSWER
+Description: An command that sends an answer to the trivia question
+
+SEND_ANSWER : Command
+
+Information structure:  id # choice
+
+Id : ID number of the trivia question. This value is numeric
+
+#  - Separation between parts of the message. This separation is necessary.
+
+choice : The answer to the trivia question. This value is numeric, and represents one of 4 possible answers to the trivia question
+
+Example of a real message:
+
+SEND_ANSWER      | 0003 | 2 # 4
+
+
+
+MY_SCORE
+Description: Request for the current point status of the user currently logged in to the system
+
+
+
+MY_SCORE : Command
+
+Information structure: Empty
+
+Example of a real message:
+
+MY_SCORE         | 0000 |
+
+
+
+HIGHSCORE
+Description: Request a scoreboard with the highest score from the server
+
+HIGHSCORE : Command
+
+Information structure: Empty
+
+Example of a real message:
+
+HIGHSCORE        | 0000 |
+
+
+
+Server -> Client (Server -> Client)
+LOGIN_OK
+Description: Reply to LOGIN message  . Sends a message that means the connection was successful
+
+LOGIN_OK : Command
+
+Information structure: Empty
+
+Example of a real message:
+
+LOGIN_OK         | 0000 |
+
+LOGGED_ANSWER
+Description: A response to a LOGGED message   sent from the customer, including the list of users currently logged in to the trivia game
+
+LOGGED_ANSWER : Command
+
+username1, username2…   : The information structure
+
+Any user who is currently logged in - his details are sent. Usernames appear in a thread with a comma-separated ' ,  ' between the names.
+
+Example of a real message:
+
+LOGGED_ANSWER    | 0004 | user1, user2
+
+YOUR_QUESTION
+Description: Reply to GET_QUESTION message  . Sending user trivia question
+
+YOUR_QUESTION : Command
+
+Information structure:  id # question # answer1 # answer2 # answer3 # answer4
+
+Id : The identifying number (or other numerical value) of the trivia question
+
+Question : A string that represents the question (question text)
+
+answer1 - answer4 : A string that represents the possible answers to a question
+
+Example of a real message:
+
+YOUR_QUESTION    | 0026 | 2 # How much is 1 + 1? # 5 # 6 # 7 # 2
+
+
+
+CORRECT_ANSWER
+Description: Reply to message  SEND_ANSWER . Indicates that the answer to the question was correct
+
+CORRECT_ANSWER : Command
+
+Information structure: Empty
+
+Example of a real message:
+
+CORRECT_ANSWER   | 0000 |
+
+
+
+WRONG_ANSWER
+Description: Reply to message  SEND_ANSWER . Indicates that the answer to the question is incorrect
+
+WRONG_ANSWER : Command
+
+Information structure:  answer
+
+answer : A numeric value that indicates the correct answer number
+
+Example of a real message:
+
+WEONG_ANSWER   | 0001 | 2
+
+
+
+YOUR_SCORE
+Description: Reply to MY_SCORE message  . Sends the score of the currently logged in user
+
+YOUR_SCORE : Command
+
+Message structure:  score
+
+score : A numeric value that represents the user's current score
+
+Example of a real message:
+
+YOUR_SCORE       | 0001 | 5
+
+
+
+ALL_SCORE
+Description: Reply to HIGHSCORE message  . Sends the table of users with the highest scores.
+
+ALL_SCORE : Command
+
+Information structure:  ... user1: score1 \ nuser2: score2 \ n
+
+user1 : Username
+
+score : The user's score
+
+\ n : Separates the different scores
+
+Example of a real message:
+
+ALL_SCORE        | 0047 | bambababy: 5 \ nabc: 0 \ ntest: 0 \ nadmin: 0 \ nblabla: 0 \ n
+
+
+
+ERROR
+Description: Error message. When the customer receives this message, the connection should be disconnected
+
+ERROR : Command
+
+Message structure:  error_msg
+
+error_msg : A string describing the error. This value can be an empty string
+
+Example of a real message:
+
+
+
+
+
+NO_QUESTIONS
+Description: Reply to GET_QUESTION message  . Indicates that no more questions are available so the game is over (GAME OVER)
+
+NO_QUESTIONS : Command
+
+Information structure: Empty
+
+Example of a real message:
+
+NO_QUESTIONS      | 0000 |
+
+
+
+Protocol State
+The protocol has the following modes:
+
+
+
+Disconnected Disconnected
+In this state of disconnection, there is no communication between the client and the server
+
+
+
+Connected
+In this situation, the client's SOCKET is connected to the server, but the client has not yet logged in.
+
+The only message the  customer  can send in this mode is a LOGIN message
+
+The message that the  server  can send in this state is a LOGIN_OK  message  to indicate that the connection was successful, or an ERROR  message  to indicate an error of any kind.
+
+
+
+Logged-in
+In this mode, the customer's SOCKET is connected, and the customer is  LOGGED IN
+
+The customer can send any message in this mode,  except the LOGIN login message
+
+The server can send any message in this state  except LOGIN_OK
+
+
+
+
+
