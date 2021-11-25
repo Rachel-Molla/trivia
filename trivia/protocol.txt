@@ -10,20 +10,26 @@ General message  format
 CCCCCCCCCCCCCCCCC | LLLL  |  MMM
 
 
-C  -  In this message structure 16 characters of command. Command characters indicate the type of message (for example,  LOGIN ). The remaining characters of the 16 characters are spaces ( "" ).
+C  -  In this message structure 16 characters of command. Command characters indicate the type of message
+ (for example,  LOGIN ). The remaining characters of the 16 characters are spaces ( "" ).
 
 |   Separation between parts of the message. This separation is necessary.
 
-L  - This field is 4 characters long, indicating the size of the next field - the message field (M). The value will be between 0000 and 9999 (negative value is invalid).
+L - This field is 4 characters long, indicating the size of the next field - the message field (M).
+The value will be between 0000 and 9999 (negative value is invalid).
 
 |   Separation between parts of the message. This separation is necessary.
 
-M - Information represented by characters. In this section we will write down the message. The message will contain the information we want to convey. Some commands do not require a message field (such as a LOGOUT message) and in such cases we will not fill in these characters and this field will be left blank.
+M - Information represented by characters. In this section we will write down the message.
+The message will contain the information we want to convey.
+Some commands do not require a message field (such as a LOGOUT message)
+and in such cases we will not fill in these characters and this field will be left blank.
 
 
 
 Messages ( Messages)
-This section describes the different messages that can be transferred between the client and the server, and from the server to the client.
+This section describes the different messages that can be transferred between the client and the server,
+and from the server to the client.
 
 Client -> Server -> Server
 LOGIN message

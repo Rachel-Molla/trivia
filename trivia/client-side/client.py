@@ -30,6 +30,14 @@ def recv_message_and_parse(conn):
     return cmd, data
 
 
+def build_send_recv_parse(conn, command, data):
+    build_and_send_message(conn, command, data)
+    msg_code, data = recv_message_and_parse(conn)
+    if msg_code and data:
+        return msg_code, data
+    error_and_exit
+
+
 def connect():
     socket_to_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socket_to_server.connect((SERVER_IP, SERVER_PORT))
@@ -49,8 +57,8 @@ def login(conn):
         client_login_msg = chatlib.join_data(client_login_details)
         build_and_send_message(conn, chatlib.PROTOCOL_CLIENT["login_msg"], client_login_msg)
         server_cmd, server_msg = recv_message_and_parse(conn)
-        if server_msg == chatlib.PROTOCOL_SERVER["login_ok_msg"]:
-            print(chatlib.PROTOCOL_SERVER["login_ok_msg"])
+        if server_cmd == chatlib.PROTOCOL_SERVER["login_ok_msg"]:
+            print("login succeed")
             return
 
 
@@ -59,10 +67,31 @@ def logout(conn):
     print("log out succeed")
 
 
+def get_score(conn):
+    command = "MY_SCORE"
+    data = ""
+    msg_code, msg_data = build_send_recv_parse(conn, command, data)
+    print(msg_data)
+
+
+def get_highscore(conn):
+    command = "HIGHSCORE"
+    data = ""
+    msg_code, msg_data = build_send_recv_parse(conn, command, data)
+    print(msg_data)
+
+
 def main():
     conn = connect()
     login(conn)
-    logout(conn)
+    while not logout(conn):
+        client_choose = input("Please enter your message:\n 's'. Get my score\n 'h'.Get high score\n 'q'. Quit\n")
+        switcher = {
+            "s": get_score(conn),
+            "h": get_highscore(conn),
+            "q": logout(conn)
+        }
+        switcher.get(client_choose)
     print("Closing client socket")
     conn.close()
 
