@@ -33,9 +33,8 @@ def recv_message_and_parse(conn):
 def build_send_recv_parse(conn, command, data):
     build_and_send_message(conn, command, data)
     msg_code, data = recv_message_and_parse(conn)
-    if msg_code and data:
-        return msg_code, data
-    error_and_exit
+    return msg_code, data
+    # error_and_exit
 
 
 def connect():
@@ -81,14 +80,53 @@ def get_highscore(conn):
     print(msg_data)
 
 
+def play_question(conn):
+    """get question"""
+    command = "GET_QUESTION"
+    data = ""
+    msg_code, msg_data = build_send_recv_parse(conn, command, data)
+    print(msg_data)
+    msg_data_arr = chatlib.split_data(msg_data, 5)
+    trivia_question_id = msg_data_arr[0]
+    question = msg_data_arr[1]
+    option1 = msg_data_arr[2]
+    option2 = msg_data_arr[3]
+    option3 = msg_data_arr[4]
+    option4 = msg_data_arr[5]
+    """print question"""
+    print("question: " + question + " :\n1." + option1 + "\n2. " + option2 + "\n3. " + option3 + "\n4. " + option4)
+    """send answer"""
+    choice = input("Please choose an answer number [1-4]: ")
+    command = "SEND_ANSWER"
+    msg_arr = [trivia_question_id, choice]
+    data = chatlib.join_data(msg_arr)
+    server_cmd, server_data = build_send_recv_parse(conn, command, data)
+    """correct or wrong answer replay"""
+    if server_cmd == "CORRECT_ANSWER":
+        print("Your answer is correct")
+    if server_data == "WRONG_ANSWER":
+        print("The correct answer is " + server_data)
+    # if error: return
+
+
+def get_logged_users(conn):
+    command = "LOGGED"
+    data = ""
+    server_cmd, server_data = build_send_recv_parse(conn, command, data)
+    print(server_data)
+
+
 def main():
     conn = connect()
     login(conn)
     while not logout(conn):
-        client_choose = input("Please enter your message:\n 's'. Get my score\n 'h'.Get high score\n 'q'. Quit\n")
+        client_choose = input("Please enter your message:\n 'p'. Play a trivia question\n 's'. Get my score\n " +
+                              "'h'. Get high score\n 'l'. Get logged users\n 'q'. Quit\n")
         switcher = {
+            "p": play_question(conn),
             "s": get_score(conn),
             "h": get_highscore(conn),
+            "l": get_logged_users(conn),
             "q": logout(conn)
         }
         switcher.get(client_choose)
