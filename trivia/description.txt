@@ -38,3 +38,12 @@
 
 התווים האחרונים המסומנים בM הם תוכן ההודעה עצמה, מידע נוסף שלעיתים נרצה להוסיף להודעה שלנו. שדה זה משתנה בין הודעה להודעה. למשל - בהודעת התחברות נמלא שדה זה בשם המשתמש והסיסמה, בעוד כאשר נבקש לקבל את רשימת התוצאות אין לנו מידע נוסף להעביר ולכן הוא ישאר ריק.
 
+
+What will the online trivia game you build look like?
+First, at the entrance to the game window the customer will be asked to enter a username and password in order to enter the game. Then a menu will appear, from which the customer will have to choose:
+
+Answer a trivia question. If the customer selects this option, a random question from the question pool file will appear on the screen. The customer will have to choose the correct (or incorrect) answer. A correct answer will earn him 5 points.
+View more customer lists in "Online" mode (connected to the game at the same time)
+View the customer's personal points status. This list is updated according to the answer to the trivia questions.
+View the scoreboard of the players in the game
+Get out of the game

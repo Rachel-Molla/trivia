@@ -65,6 +65,27 @@ def main():
 	check_parse("LOGIN           |	  z|data", (None, None))
 	check_parse("LOGIN           |	  5|data", (None, None))
 
+	print(chatlib.split_data("username#password", 1))
+	print(chatlib.split_data("user#name#pass#word", 2))
+	print(chatlib.split_data("username", 2))
+
+	print(chatlib.join_data(["username", "password"]))
+	print(chatlib.join_data(["question", "ans1", "ans2", "ans3", "ans4", "correct"]))
+
+	print(chatlib.build_message("LOGIN", "aaaa#bbbb"))
+	print(chatlib.build_message("LOGIN", "aaaabbbb"))
+	print(chatlib.build_message("LOGIN", ""))
+	print(chatlib.build_message("0123456789ABCDEFGH", ""))
+	print(chatlib.build_message("A", "A"*(chatlib.MAX_DATA_LENGTH+1)))
+
+	print(chatlib.parse_message("LOGIN           |0009|aaaa#bbbb"))
+	print(chatlib.parse_message("LOGIN           |   9|aaaa#bbbb"))
+	print(chatlib.parse_message("LOGIN           $   9|aaaa#bbbb"))
+	print(chatlib.parse_message("LOGIN           |   z|aaaa"))
+
+	print(chatlib.build_message("LOGIN", "user#pass"))
+	print(chatlib.parse_message("LOGIN          |  8|user#pass"))
+
 
 if __name__ == '__main__':
 	main()

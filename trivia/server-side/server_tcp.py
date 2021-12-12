@@ -2,8 +2,12 @@ import socket
 import datetime
 import random
 
+SERVER_IP = "0.0.0.0"
+PORT = 8820
+MAX_MSG_SIZE = 1024
+
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind(("0.0.0.0", 8820))
+server_socket.bind((SERVER_IP, PORT))
 server_socket.listen()
 print("Server is up and running")
 (client_socket, client_address) = server_socket.accept()
@@ -11,7 +15,7 @@ print("Client connected")
 
 server_data = ""
 while True:
-    client_data = client_socket.recv(1024).decode()
+    client_data = client_socket.recv(MAX_MSG_SIZE).decode()
     print("Client sent: " + client_data)
     if client_data == "Quit":
         print("closing client socket now...")
@@ -31,5 +35,3 @@ while True:
 
 client_socket.close()
 server_socket.close()
-
-
